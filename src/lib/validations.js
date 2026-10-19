@@ -1,13 +1,13 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z.email("Adresse email invalide").trim().toLowerCase(),
+  email: z.string().trim().toLowerCase().pipe(z.email("Adresse email invalide")),
   password: z.string().min(1, "Mot de passe requis"),
 });
 
 export const registerSchema = z.object({
   name: z.string().trim().min(2, "Le nom doit faire au moins 2 caractères").max(50),
-  email: z.email("Adresse email invalide").trim().toLowerCase(),
+  email: z.string().trim().toLowerCase().pipe(z.email("Adresse email invalide")),
   password: z.string().min(8, "Le mot de passe doit faire au moins 8 caractères").max(100),
 });
 
