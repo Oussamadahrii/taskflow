@@ -6,8 +6,9 @@ import KanbanBoard from "@/components/board/KanbanBoard";
 
 export async function generateMetadata({ params }) {
   const { boardId } = await params;
+  await requireBoardAccess(boardId);
   const board = await prisma.board.findUnique({ where: { id: boardId }, select: { title: true } });
-  return { title: `${board?.title ?? "Tableau"} · TaskFlow` };
+  return { title: `${board.title} · TaskFlow` };
 }
 
 export default async function BoardPage({ params }) {
