@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
 const WRITE_ROLES = ["OWNER", "ADMIN", "MEMBER"];
+const ADMIN_ROLES = ["OWNER", "ADMIN"];
 
 export async function requireUser() {
   const session = await auth();
@@ -40,4 +41,13 @@ export function requireCardAccess(cardId, { write = false } = {}) {
     { boards: { some: { columns: { some: { cards: { some: { id: cardId } } } } } } },
     { write },
   );
+}
+
+// Managing members (invitations, roles) is reserved to owners and admins.
+export async function requireWorkspaceAdmin(workspaceId) {
+  const { user, membership } = await requireMembership({ id: workspaceId }, { write: false });
+  if (!ADMIN_ROLES.includes(membership.role)) {
+    throw new Error("Seuls les propriétaires et administrateurs peuvent gérer les membres.");
+  }
+  return { user, membership };
 }
