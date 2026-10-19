@@ -7,15 +7,21 @@ import { prisma } from "@/lib/prisma";
 import { loginSchema, registerSchema } from "@/lib/validations";
 import { DEFAULT_COLUMNS } from "@/lib/constants";
 
+// React resets the form after an action: returning the typed values lets the
+// form show them again next to the error message (never the password).
+function failure(error, formData) {
+  return { error, values: { name: formData.get("name") ?? "", email: formData.get("email") ?? "" } };
+}
+
 export async function register(_prevState, formData) {
   const parsed = registerSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
-    return { error: parsed.error.issues[0].message };
+    return failure(parsed.error.issues[0].message, formData);
   }
   const { name, email, password } = parsed.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) return { error: "Un compte existe déjà avec cet email." };
+  if (existing) return failure("Un compte existe déjà avec cet email.", formData);
 
   // A new user gets a personal workspace and a starter board right away.
   await prisma.user.create({
@@ -50,14 +56,14 @@ export async function register(_prevState, formData) {
 export async function login(_prevState, formData) {
   const parsed = loginSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
-    return { error: parsed.error.issues[0].message };
+    return failure(parsed.error.issues[0].message, formData);
   }
 
   try {
     await signIn("credentials", { ...parsed.data, redirectTo: "/dashboard" });
   } catch (error) {
     // signIn redirects by throwing, so only auth failures are handled here.
-    if (error instanceof AuthError) return { error: "Email ou mot de passe incorrect." };
+    if (error instanceof AuthError) return failure("Email ou mot de passe incorrect.", formData);
     throw error;
   }
 }

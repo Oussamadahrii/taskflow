@@ -19,12 +19,19 @@ export default function AuthForm({ mode }) {
       {isRegister && (
         <label className="block text-sm font-medium">
           Nom
-          <input name="name" required autoComplete="name" className={inputClass} />
+          <input name="name" required autoComplete="name" defaultValue={state?.values?.name} className={inputClass} />
         </label>
       )}
       <label className="block text-sm font-medium">
         Email
-        <input name="email" type="email" required autoComplete="email" className={inputClass} />
+        <input
+          name="email"
+          type="email"
+          required
+          autoComplete="email"
+          defaultValue={state?.values?.email}
+          className={inputClass}
+        />
       </label>
       <label className="block text-sm font-medium">
         Mot de passe
