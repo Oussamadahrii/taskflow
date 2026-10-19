@@ -41,3 +41,9 @@ export const moveCardSchema = z.object({
   toColumnId: z.string().min(1),
   toIndex: z.number().int().min(0),
 });
+
+// OWNER is deliberately absent: ownership is never granted through a link.
+export const createInvitationSchema = z.object({
+  workspaceId: z.string().min(1),
+  role: z.enum(["ADMIN", "MEMBER", "VIEWER"], { error: "Rôle invalide" }).default("MEMBER"),
+});
