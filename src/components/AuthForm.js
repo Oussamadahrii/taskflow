@@ -8,13 +8,15 @@ import SubmitButton from "@/components/SubmitButton";
 const inputClass =
   "mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100";
 
-export default function AuthForm({ mode }) {
+export default function AuthForm({ mode, callbackUrl }) {
   const isRegister = mode === "register";
   const [state, formAction] = useActionState(isRegister ? register : login, null);
+  const switchHref = isRegister ? "/login" : "/register";
 
   return (
     <form action={formAction} className="space-y-4">
       <h1 className="text-lg font-semibold">{isRegister ? "Créer un compte" : "Connexion"}</h1>
+      {callbackUrl && <input type="hidden" name="callbackUrl" value={callbackUrl} />}
 
       {isRegister && (
         <label className="block text-sm font-medium">
@@ -55,7 +57,9 @@ export default function AuthForm({ mode }) {
 
       <p className="text-center text-sm text-slate-600">
         {isRegister ? "Déjà un compte ? " : "Pas encore de compte ? "}
-        <Link href={isRegister ? "/login" : "/register"} className="font-medium text-indigo-600 hover:underline">
+        <Link
+          href={callbackUrl ? `${switchHref}?callbackUrl=${encodeURIComponent(callbackUrl)}` : switchHref}
+          className="font-medium text-indigo-600 hover:underline">
           {isRegister ? "Se connecter" : "S'inscrire"}
         </Link>
       </p>
