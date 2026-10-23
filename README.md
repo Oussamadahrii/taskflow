@@ -2,6 +2,8 @@
 
 Application web de gestion de projets collaborative, inspirée de Trello : des tableaux Kanban où l'on organise ses tâches en colonnes et où on les déplace par glisser-déposer.
 
+**Démo en ligne : [taskflow-qaqx.vercel.app](https://taskflow-qaqx.vercel.app)** (compte de démo : **demo@taskflow.dev** / **demo1234**)
+
 > 🚧 Projet en cours de développement : voir la [feuille de route](#feuille-de-route).
 
 ![Capture d’écran de TaskFlow](docs/screenshot.png)
@@ -104,7 +106,7 @@ Ouvrez [http://localhost:3000](http://localhost:3000) et connectez-vous avec le 
 - [ ] Commentaires et assignation des cartes
 - [ ] Connexion avec Google
 - [ ] Assistant IA : découpage de tâches, création en langage naturel, résumé hebdomadaire
-- [ ] Déploiement (Vercel + Neon)
+- [x] Déploiement (Vercel + Neon)
 
 ## Licence
 
