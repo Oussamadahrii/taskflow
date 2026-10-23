@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -22,6 +23,7 @@ model User {
   createdAt    DateTime     @default(now())
   memberships  Membership[]
   cards        Card[]       @relation("CardAssignee")
+  invitations  Invitation[]
 }
 
 model Workspace {
@@ -30,6 +32,7 @@ model Workspace {
   createdAt   DateTime     @default(now())
   memberships Membership[]
   boards      Board[]
+  invitations Invitation[]
 }
 
 model Membership {
@@ -77,4 +80,18 @@ model Card {
   assignee    User?     @relation("CardAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
 
   @@index([columnId, position])
+}
+
+model Invitation {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  role      Role     @default(MEMBER)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
 }

@@ -6,6 +6,7 @@ import { signIn, signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { loginSchema, registerSchema } from "@/lib/validations";
 import { DEFAULT_COLUMNS } from "@/lib/constants";
+import { safeRedirectPath } from "@/lib/safe-redirect";
 
 // React resets the form after an action: returning the typed values lets the
 // form show them again next to the error message (never the password).
@@ -60,7 +61,8 @@ export async function login(_prevState, formData) {
   }
 
   try {
-    await signIn("credentials", { ...parsed.data, redirectTo: "/dashboard" });
+    const redirectTo = safeRedirectPath(formData.get("callbackUrl"));
+    await signIn("credentials", { ...parsed.data, redirectTo });
   } catch (error) {
     // signIn redirects by throwing, so only auth failures are handled here.
     if (error instanceof AuthError) return failure("Email ou mot de passe incorrect.", formData);

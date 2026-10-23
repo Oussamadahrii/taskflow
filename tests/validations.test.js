@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { registerSchema, updateCardSchema } from "@/lib/validations";
+import { createInvitationSchema, registerSchema, updateCardSchema } from "@/lib/validations";
 
 describe("registerSchema", () => {
   it("normalizes the email", () => {
@@ -26,5 +26,16 @@ describe("updateCardSchema", () => {
 
   it("rejects an invalid due date", () => {
     expect(updateCardSchema.safeParse({ cardId: "c1", title: "Tâche", dueDate: "pas une date" }).success).toBe(false);
+  });
+});
+
+describe("createInvitationSchema", () => {
+  it("defaults the role to MEMBER", () => {
+    const result = createInvitationSchema.parse({ workspaceId: "w1" });
+    expect(result.role).toBe("MEMBER");
+  });
+
+  it("never allows inviting an OWNER", () => {
+    expect(createInvitationSchema.safeParse({ workspaceId: "w1", role: "OWNER" }).success).toBe(false);
   });
 });
