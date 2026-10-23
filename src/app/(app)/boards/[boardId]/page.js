@@ -35,13 +35,21 @@ export default async function BoardPage({ params }) {
           </Link>
           <h1 className="truncate text-xl font-bold">{board.title}</h1>
         </div>
-        {canEdit && (
-          <form action={deleteBoard.bind(null, board.id)}>
-            <button className="rounded-lg px-3 py-1.5 text-sm text-red-600 hover:bg-red-50">
-              Supprimer le tableau
-            </button>
-          </form>
-        )}
+        <div className="flex shrink-0 items-center gap-2">
+          <Link
+            href={`/workspaces/${board.workspaceId}/members`}
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-100"
+          >
+            Membres
+          </Link>
+          {canEdit && (
+            <form action={deleteBoard.bind(null, board.id)}>
+              <button className="rounded-lg px-3 py-1.5 text-sm text-red-600 hover:bg-red-50">
+                Supprimer le tableau
+              </button>
+            </form>
+          )}
+        </div>
       </div>
       <KanbanBoard boardId={board.id} initialColumns={board.columns} canEdit={canEdit} />
     </main>
