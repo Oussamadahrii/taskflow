@@ -10,6 +10,7 @@ Application web de gestion de projets collaborative, inspirée de Trello : des t
 
 - **Authentification** : inscription et connexion par email / mot de passe (mots de passe hachés avec bcrypt, sessions JWT)
 - **Espaces de travail** : chaque utilisateur a un espace personnel ; les accès sont gérés par rôles (`OWNER`, `ADMIN`, `MEMBER`, `VIEWER`)
+- **Invitations** : les propriétaires et administrateurs génèrent un lien d'invitation valable 7 jours, avec le rôle de leur choix ; la personne invitée peut rejoindre l'espace même sans compte (inscription puis retour sur l'invitation)
 - **Tableaux Kanban** : création de tableaux, colonnes et cartes
 - **Glisser-déposer** des cartes entre colonnes, au clavier comme à la souris, avec mise à jour optimiste de l'interface
 - **Détails d'une carte** : description, date d'échéance (mise en évidence quand elle est dépassée)
@@ -31,16 +32,19 @@ Application web de gestion de projets collaborative, inspirée de Trello : des t
 ```
 src/
 ├── app/
-│   ├── (auth)/            # Pages de connexion et d'inscription
-│   ├── (app)/             # Pages protégées : dashboard, tableaux
-│   ├── actions/           # Server Actions (mutations : auth, tableaux, colonnes, cartes)
+│   ├── (auth)/            # Connexion, inscription et page d'invitation
+│   ├── (app)/             # Pages protégées : dashboard, tableaux, membres
+│   ├── actions/           # Server Actions (mutations : auth, tableaux, colonnes, cartes, invitations)
 │   └── api/auth/          # Routes Auth.js
 ├── components/
 │   └── board/             # Kanban : colonnes, cartes, glisser-déposer, modale
 ├── lib/
 │   ├── access.js          # Contrôle d'accès (vérification des rôles)
 │   ├── board-utils.js     # Logique pure de réordonnancement (testée)
+│   ├── invitations.js     # Statut d'une invitation : valide, expirée, invalide (testé)
 │   ├── prisma.js          # Client Prisma
+│   ├── roles.js           # Règles de rôles partagées par les pages et les actions
+│   ├── safe-redirect.js   # Protection contre les redirections ouvertes après connexion
 │   └── validations.js     # Schémas Zod
 └── auth.js                # Configuration Auth.js
 prisma/
@@ -48,13 +52,14 @@ prisma/
 └── seed.js                # Données de démonstration
 ```
 
-**Modèle de données** : `User` ↔ `Membership` (rôle) ↔ `Workspace` → `Board` → `Column` → `Card`
+**Modèle de données** : `User` ↔ `Membership` (rôle) ↔ `Workspace` → `Board` → `Column` → `Card`, et `Workspace` → `Invitation`
 
 **Choix techniques**
 
 - Les **Server Actions** remplacent une API REST classique : les mutations sont appelées directement depuis les composants, avec validation et contrôle d'accès côté serveur.
 - Le glisser-déposer est **optimiste** : l'interface se met à jour immédiatement, puis le serveur réordonne les positions dans une **transaction** ; en cas d'erreur, l'état est restauré.
 - La logique de déplacement des cartes est une **fonction pure** (`lib/board-utils.js`), testée unitairement.
+- Un lien d'invitation contient un **token aléatoire de 256 bits** : le lien est le seul secret. Le rôle `OWNER` ne peut jamais être attribué par un lien, et cette règle est appliquée côté serveur par le schéma Zod.
 
 ## Lancer le projet en local
 
@@ -99,7 +104,7 @@ Ouvrez [http://localhost:3000](http://localhost:3000) et connectez-vous avec le 
 - [x] Tableaux, colonnes et cartes (CRUD)
 - [x] Glisser-déposer des cartes
 - [x] Tests unitaires et intégration continue
-- [ ] Invitation de membres dans un espace de travail
+- [x] Invitation de membres dans un espace de travail
 - [ ] Synchronisation en temps réel (Socket.io)
 - [ ] Commentaires et assignation des cartes
 - [ ] Connexion avec Google
