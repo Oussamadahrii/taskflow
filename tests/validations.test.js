@@ -27,6 +27,16 @@ describe("updateCardSchema", () => {
   it("rejects an invalid due date", () => {
     expect(updateCardSchema.safeParse({ cardId: "c1", title: "Tâche", dueDate: "pas une date" }).success).toBe(false);
   });
+
+  it("turns an empty assignee into null to unassign the card", () => {
+    const result = updateCardSchema.parse({ cardId: "c1", title: "Tâche", assigneeId: "" });
+    expect(result.assigneeId).toBeNull();
+  });
+
+  it("leaves the assignee undefined when it is not sent", () => {
+    const result = updateCardSchema.parse({ cardId: "c1", title: "Tâche" });
+    expect(result.assigneeId).toBeUndefined();
+  });
 });
 
 describe("createInvitationSchema", () => {

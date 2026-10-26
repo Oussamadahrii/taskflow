@@ -34,6 +34,11 @@ export const updateCardSchema = z.object({
     .optional()
     .transform((value) => (value ? new Date(value) : null))
     .refine((date) => date === null || !Number.isNaN(date.getTime()), "Date invalide"),
+  // Omitted: left unchanged (Prisma skips undefined). Empty string: unassigned.
+  assigneeId: z
+    .string()
+    .optional()
+    .transform((value) => (value === "" ? null : value)),
 });
 
 export const moveCardSchema = z.object({
