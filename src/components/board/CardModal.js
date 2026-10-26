@@ -10,10 +10,11 @@ function toDateInput(date) {
   return date ? new Date(date).toISOString().slice(0, 10) : "";
 }
 
-export default function CardModal({ card, canEdit, onClose, onSaved, onDeleted }) {
+export default function CardModal({ card, members, canEdit, onClose, onSaved, onDeleted }) {
   const [title, setTitle] = useState(card.title);
   const [description, setDescription] = useState(card.description ?? "");
   const [dueDate, setDueDate] = useState(toDateInput(card.dueDate));
+  const [assigneeId, setAssigneeId] = useState(card.assigneeId ?? "");
   const [error, setError] = useState(null);
   const [pending, setPending] = useState(false);
 
@@ -26,7 +27,7 @@ export default function CardModal({ card, canEdit, onClose, onSaved, onDeleted }
   async function handleSave(event) {
     event.preventDefault();
     setPending(true);
-    const result = await updateCard({ cardId: card.id, title, description, dueDate });
+    const result = await updateCard({ cardId: card.id, title, description, dueDate, assigneeId });
     setPending(false);
     if (result.error) return setError(result.error);
     onSaved(result.card);
@@ -85,6 +86,22 @@ export default function CardModal({ card, canEdit, onClose, onSaved, onDeleted }
             disabled={!canEdit}
             className={inputClass}
           />
+        </label>
+        <label className="block text-sm font-medium">
+          Responsable
+          <select
+            value={assigneeId}
+            onChange={(e) => setAssigneeId(e.target.value)}
+            disabled={!canEdit}
+            className={inputClass}
+          >
+            <option value="">Personne</option>
+            {members.map((member) => (
+              <option key={member.id} value={member.id}>
+                {member.name}
+              </option>
+            ))}
+          </select>
         </label>
 
         {error && <p className="text-sm text-red-600">{error}</p>}

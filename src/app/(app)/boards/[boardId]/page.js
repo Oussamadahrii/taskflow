@@ -16,15 +16,29 @@ export default async function BoardPage({ params }) {
   const { membership } = await requireBoardAccess(boardId);
   const canEdit = membership.role !== "VIEWER";
 
-  const board = await prisma.board.findUnique({
-    where: { id: boardId },
-    include: {
-      columns: {
-        orderBy: { position: "asc" },
-        include: { cards: { orderBy: { position: "asc" } } },
+  const [board, memberships] = await Promise.all([
+    prisma.board.findUnique({
+      where: { id: boardId },
+      include: {
+        columns: {
+          orderBy: { position: "asc" },
+          include: {
+            cards: {
+              orderBy: { position: "asc" },
+              include: { assignee: { select: { id: true, name: true } } },
+            },
+          },
+        },
       },
-    },
-  });
+    }),
+    // Only id and name leave the server: emails are not needed to pick an assignee.
+    prisma.membership.findMany({
+      where: { workspaceId: membership.workspaceId },
+      orderBy: { user: { name: "asc" } },
+      select: { user: { select: { id: true, name: true } } },
+    }),
+  ]);
+  const members = memberships.map(({ user }) => user);
 
   return (
     <main className="flex flex-1 flex-col">
@@ -51,7 +65,7 @@ export default async function BoardPage({ params }) {
           )}
         </div>
       </div>
-      <KanbanBoard boardId={board.id} initialColumns={board.columns} canEdit={canEdit} />
+      <KanbanBoard boardId={board.id} initialColumns={board.columns} members={members} canEdit={canEdit} />
     </main>
   );
 }

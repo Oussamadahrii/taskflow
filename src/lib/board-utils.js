@@ -24,3 +24,14 @@ export function moveCard(columns, cardId, toColumnId, toIndex) {
     return { ...column, cards };
   });
 }
+
+// "Ada Lovelace" -> "AL". Two letters at most so the badge stays round.
+export function getInitials(name) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0].toUpperCase())
+    .join("");
+}
