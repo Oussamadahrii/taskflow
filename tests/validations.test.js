@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createInvitationSchema, registerSchema, updateCardSchema } from "@/lib/validations";
+import { createCommentSchema, createInvitationSchema, registerSchema, updateCardSchema } from "@/lib/validations";
 
 describe("registerSchema", () => {
   it("normalizes the email", () => {
@@ -36,6 +36,16 @@ describe("updateCardSchema", () => {
   it("leaves the assignee undefined when it is not sent", () => {
     const result = updateCardSchema.parse({ cardId: "c1", title: "Tâche" });
     expect(result.assigneeId).toBeUndefined();
+  });
+});
+
+describe("createCommentSchema", () => {
+  it("trims the comment", () => {
+    expect(createCommentSchema.parse({ cardId: "c1", body: "  Bonjour  " }).body).toBe("Bonjour");
+  });
+
+  it("rejects a comment made of spaces", () => {
+    expect(createCommentSchema.safeParse({ cardId: "c1", body: "   " }).success).toBe(false);
   });
 });
 
