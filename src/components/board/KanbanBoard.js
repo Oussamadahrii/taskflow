@@ -18,7 +18,7 @@ import BoardColumn from "./BoardColumn";
 import CardItem from "./CardItem";
 import CardModal from "./CardModal";
 
-export default function KanbanBoard({ boardId, initialColumns, members, canEdit }) {
+export default function KanbanBoard({ boardId, initialColumns, members, currentUser, canEdit }) {
   const [columns, setColumns] = useState(initialColumns);
   const [activeCard, setActiveCard] = useState(null);
   const [openCard, setOpenCard] = useState(null);
@@ -136,6 +136,7 @@ export default function KanbanBoard({ boardId, initialColumns, members, canEdit 
         <CardModal
           card={openCard}
           members={members}
+          currentUser={currentUser}
           canEdit={canEdit}
           onClose={() => setOpenCard(null)}
           onSaved={(card) =>

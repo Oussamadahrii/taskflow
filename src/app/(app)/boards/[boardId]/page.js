@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
 
 export default async function BoardPage({ params }) {
   const { boardId } = await params;
-  const { membership } = await requireBoardAccess(boardId);
+  const { user, membership } = await requireBoardAccess(boardId);
   const canEdit = membership.role !== "VIEWER";
 
   const [board, memberships] = await Promise.all([
@@ -65,7 +65,13 @@ export default async function BoardPage({ params }) {
           )}
         </div>
       </div>
-      <KanbanBoard boardId={board.id} initialColumns={board.columns} members={members} canEdit={canEdit} />
+      <KanbanBoard
+        boardId={board.id}
+        initialColumns={board.columns}
+        members={members}
+        currentUser={{ userId: user.id, role: membership.role }}
+        canEdit={canEdit}
+      />
     </main>
   );
 }
