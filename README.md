@@ -15,7 +15,7 @@ Application web de gestion de projets collaborative, inspirée de Trello : des t
 - **Invitations** : les propriétaires et administrateurs génèrent un lien d'invitation valable 7 jours, avec le rôle de leur choix ; la personne invitée peut rejoindre l'espace même sans compte (inscription puis retour sur l'invitation)
 - **Tableaux Kanban** : création de tableaux, colonnes et cartes
 - **Glisser-déposer** des cartes entre colonnes, au clavier comme à la souris, avec mise à jour optimiste de l'interface
-- **Détails d'une carte** : description, date d'échéance (mise en évidence quand elle est dépassée)
+- **Détails d'une carte** : description, date d'échéance (mise en évidence quand elle est dépassée), responsable choisi parmi les membres de l'espace
 - **Sécurité** : chaque action serveur vérifie l'appartenance de l'utilisateur à l'espace de travail ; toutes les entrées sont validées avec Zod
 
 ## Stack technique
@@ -107,8 +107,9 @@ Ouvrez [http://localhost:3000](http://localhost:3000) et connectez-vous avec le 
 - [x] Glisser-déposer des cartes
 - [x] Tests unitaires et intégration continue
 - [x] Invitation de membres dans un espace de travail
-- [ ] Synchronisation en temps réel (Socket.io)
-- [ ] Commentaires et assignation des cartes
+- [x] Assignation des cartes à un membre
+- [ ] Commentaires sur les cartes
+- [ ] Synchronisation en temps réel (service hébergé type Pusher, compatible avec Vercel)
 - [ ] Connexion avec Google
 - [ ] Assistant IA : découpage de tâches, création en langage naturel, résumé hebdomadaire
 - [x] Déploiement (Vercel + Neon)
