@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { findColumnOfCard, moveCard } from "@/lib/board-utils";
+import { findColumnOfCard, getInitials, moveCard } from "@/lib/board-utils";
 
 const columns = [
   { id: "todo", cards: [{ id: "a" }, { id: "b" }, { id: "c" }] },
@@ -39,5 +39,19 @@ describe("moveCard", () => {
   it("does not mutate the original columns", () => {
     moveCard(columns, "a", "done", 0);
     expect(ids(columns)).toEqual([["a", "b", "c"], ["d"]]);
+  });
+});
+
+describe("getInitials", () => {
+  it("takes the first letter of the first two words", () => {
+    expect(getInitials("Ada Lovelace")).toBe("AL");
+  });
+
+  it("ignores extra spaces and further words", () => {
+    expect(getInitials("  jean   pierre dupont ")).toBe("JP");
+  });
+
+  it("handles a single name", () => {
+    expect(getInitials("ada")).toBe("A");
   });
 });
