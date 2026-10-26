@@ -2,6 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { getInitials } from "@/lib/board-utils";
 
 function formatDueDate(date) {
   return new Date(date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
@@ -31,7 +32,7 @@ export default function CardItem({ card, disabled = false, overlay = false, onOp
       } ${overlay ? "rotate-2 cursor-grabbing shadow-lg" : ""}`}
     >
       <p className="break-words font-medium">{card.title}</p>
-      {(card.description || card.dueDate) && (
+      {(card.description || card.dueDate || card.assignee) && (
         <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
           {card.dueDate && (
             <span
@@ -43,6 +44,15 @@ export default function CardItem({ card, disabled = false, overlay = false, onOp
             </span>
           )}
           {card.description && <span title="Cette carte a une description">≡</span>}
+          {card.assignee && (
+            <span
+              title={`Responsable : ${card.assignee.name}`}
+              aria-label={`Responsable : ${card.assignee.name}`}
+              className="ml-auto flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-semibold text-indigo-700"
+            >
+              {getInitials(card.assignee.name)}
+            </span>
+          )}
         </div>
       )}
     </li>

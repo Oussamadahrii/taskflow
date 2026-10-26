@@ -31,12 +31,22 @@ export async function createCard(input) {
 export async function updateCard(input) {
   const parsed = updateCardSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
-  const { cardId, title, description, dueDate } = parsed.data;
+  const { cardId, title, description, dueDate, assigneeId } = parsed.data;
 
-  await requireCardAccess(cardId, { write: true });
+  const { membership } = await requireCardAccess(cardId, { write: true });
+
+  // The id comes from the client: only a member of this workspace can be assigned.
+  if (assigneeId) {
+    const assignee = await prisma.membership.findUnique({
+      where: { userId_workspaceId: { userId: assigneeId, workspaceId: membership.workspaceId } },
+    });
+    if (!assignee) return { error: "Cette personne n'est pas membre de l'espace de travail." };
+  }
+
   const card = await prisma.card.update({
     where: { id: cardId },
-    data: { title, description: description || null, dueDate },
+    data: { title, description: description || null, dueDate, assigneeId },
+    include: { assignee: { select: { id: true, name: true } } },
   });
 
   revalidatePath(`/boards/${await boardIdOfColumn(card.columnId)}`);
