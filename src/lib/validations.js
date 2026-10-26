@@ -47,6 +47,11 @@ export const moveCardSchema = z.object({
   toIndex: z.number().int().min(0),
 });
 
+export const createCommentSchema = z.object({
+  cardId: z.string().min(1),
+  body: z.string().trim().min(1, "Le commentaire est vide").max(2000),
+});
+
 // OWNER is deliberately absent: ownership is never granted through a link.
 export const createInvitationSchema = z.object({
   workspaceId: z.string().min(1),
